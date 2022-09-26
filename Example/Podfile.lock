@@ -1,0 +1,16 @@
+PODS:
+  - RadioFrequencyView (1.0.0)
+
+DEPENDENCIES:
+  - RadioFrequencyView (from `../`)
+
+EXTERNAL SOURCES:
+  RadioFrequencyView:
+    :path: "../"
+
+SPEC CHECKSUMS:
+  RadioFrequencyView: d5bff50c0829289db0ce86a679c28e130b4d8b30
+
+PODFILE CHECKSUM: 1314cddecc6102e14417a1d756548ebaf2817d02
+
+COCOAPODS: 1.11.3

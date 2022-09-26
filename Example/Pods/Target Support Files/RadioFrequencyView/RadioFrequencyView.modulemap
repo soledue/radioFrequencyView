@@ -1,0 +1,6 @@
+framework module RadioFrequencyView {
+  umbrella header "RadioFrequencyView-umbrella.h"
+
+  export *
+  module * { export * }
+}

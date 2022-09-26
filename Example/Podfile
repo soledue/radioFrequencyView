@@ -1,0 +1,13 @@
+# Uncomment the next line to define a global platform for your project
+# platform :ios, '11.0'
+
+def sharedPods
+  use_frameworks!
+  pod 'RadioFrequencyView', :path => '../'
+end
+
+target 'RadioFrequencyView' do
+  sharedPods
+end
+
+
