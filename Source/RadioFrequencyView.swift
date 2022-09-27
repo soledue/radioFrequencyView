@@ -35,6 +35,7 @@ public class RadioFrequencyView: UIControl {
                 endFrequency = 1710
                 stepFrequency = 1
             }
+            refresh()
         }
     }
     public var labelFormat: LabelFormat = .decimal
@@ -110,7 +111,7 @@ public class RadioFrequencyView: UIControl {
         super.layoutSubviews()
         scrollView.contentInset = UIEdgeInsets(top: 0, left: bounds.width/2, bottom: 0, right: bounds.width/2)
     }
-    func refresh() {
+    public func refresh() {
         buildFrequency()
         buildOverlay()
     }
