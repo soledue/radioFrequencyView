@@ -114,6 +114,7 @@ public class RadioFrequencyView: UIControl {
     public func refresh() {
         buildFrequency()
         buildOverlay()
+        frequecy = startFrequency
     }
     public override func prepareForInterfaceBuilder() {
         setup()
@@ -144,30 +145,6 @@ private extension RadioFrequencyView {
         scrollView.showsHorizontalScrollIndicator = false
         scrollView.delegate = self
         
-        let fake = UIView(frame: .null)
-        scrollView.addSubview(fake)
-        fake.translatesAutoresizingMaskIntoConstraints = false
-        fake.leftAnchor.constraint(equalTo: scrollView.leftAnchor).isActive = true
-        let right = fake.rightAnchor.constraint(equalTo: scrollView.rightAnchor)
-        right.priority = .defaultLow
-        
-        right.isActive = true
-        fake.topAnchor.constraint(equalTo: scrollView.topAnchor).isActive = true
-        fake.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor).isActive = true
-        let width = fake.widthAnchor.constraint(equalTo: scrollView.widthAnchor)
-        width.priority = .defaultLow
-        width.isActive = true
-        fake.heightAnchor.constraint(equalTo: scrollView.heightAnchor).isActive = true
-        
-        fake.addSubview(frequenciesView)
-        frequenciesView.translatesAutoresizingMaskIntoConstraints = false
-        frequenciesView.leftAnchor.constraint(equalTo: fake.leftAnchor).isActive = true
-        frequenciesView.rightAnchor.constraint(equalTo: fake.rightAnchor).isActive = true
-        frequenciesView.topAnchor.constraint(equalTo: fake.topAnchor).isActive = true
-        frequenciesView.bottomAnchor.constraint(equalTo: fake.bottomAnchor).isActive = true
-        
-        frequenciesView.axis = .horizontal
-        frequenciesView.distribution = .fill
 
         buildFrequency()
         buildOverlay()
@@ -232,6 +209,34 @@ private extension RadioFrequencyView {
         rightButton.addTarget(self, action: #selector(rightPressed), for: .touchUpInside)
     }
     func buildFrequency() {
+        scrollView.subviews.first?.removeFromSuperview()
+        frequenciesView.removeFromSuperview()
+        frequenciesView = UIStackView(frame: .null)
+        let fake = UIView(frame: .null)
+        scrollView.addSubview(fake)
+        fake.translatesAutoresizingMaskIntoConstraints = false
+        fake.leftAnchor.constraint(equalTo: scrollView.leftAnchor).isActive = true
+        let right = fake.rightAnchor.constraint(equalTo: scrollView.rightAnchor)
+        right.priority = .defaultLow
+        
+        right.isActive = true
+        fake.topAnchor.constraint(equalTo: scrollView.topAnchor).isActive = true
+        fake.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor).isActive = true
+        let width = fake.widthAnchor.constraint(equalTo: scrollView.widthAnchor)
+        width.priority = .defaultLow
+        width.isActive = true
+        fake.heightAnchor.constraint(equalTo: scrollView.heightAnchor).isActive = true
+        
+        fake.addSubview(frequenciesView)
+        frequenciesView.translatesAutoresizingMaskIntoConstraints = false
+        frequenciesView.leftAnchor.constraint(equalTo: fake.leftAnchor).isActive = true
+        frequenciesView.rightAnchor.constraint(equalTo: fake.rightAnchor).isActive = true
+        frequenciesView.topAnchor.constraint(equalTo: fake.topAnchor).isActive = true
+        frequenciesView.bottomAnchor.constraint(equalTo: fake.bottomAnchor).isActive = true
+        
+        frequenciesView.axis = .horizontal
+        frequenciesView.distribution = .fill
+        
         frequenciesView.spacing = distanceFrequency
         frequenciesView.arrangedSubviews.forEach({ $0.removeFromSuperview() })
         
