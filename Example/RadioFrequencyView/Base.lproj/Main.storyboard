@@ -30,15 +30,41 @@
                                     <userDefinedRuntimeAttribute type="image" keyPath="rightShadowImage" value="RectangleRight"/>
                                 </userDefinedRuntimeAttributes>
                             </view>
+                            <stackView opaque="NO" contentMode="scaleToFill" spacing="49" translatesAutoresizingMaskIntoConstraints="NO" id="krt-0q-RUT">
+                                <rect key="frame" x="121.00000000000001" y="405" width="148.33333333333337" height="34.333333333333314"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="CCm-xz-oWG">
+                                        <rect key="frame" x="0.0" y="0.0" width="49.666666666666664" height="34.333333333333336"/>
+                                        <state key="normal" title="Button"/>
+                                        <buttonConfiguration key="configuration" style="plain" title="FM"/>
+                                        <connections>
+                                            <action selector="fmPressed:" destination="BYZ-38-t0r" eventType="touchUpInside" id="uNK-PC-7F0"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Skl-2j-P0T">
+                                        <rect key="frame" x="98.666666666666657" y="0.0" width="49.666666666666657" height="34.333333333333336"/>
+                                        <state key="normal" title="Button"/>
+                                        <buttonConfiguration key="configuration" style="plain" title="AM"/>
+                                        <connections>
+                                            <action selector="amPressed:" destination="BYZ-38-t0r" eventType="touchUpInside" id="5E3-zt-Vkm"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                            </stackView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
+                            <constraint firstItem="krt-0q-RUT" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="4lB-BB-mfU"/>
+                            <constraint firstItem="krt-0q-RUT" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="ASI-Re-PDA"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="ThG-cx-v8k" secondAttribute="trailing" id="DNx-82-RMZ"/>
                             <constraint firstItem="ThG-cx-v8k" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="PfM-4i-uWB"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="ThG-cx-v8k" secondAttribute="bottom" constant="215" id="Ugc-M8-yfT"/>
                         </constraints>
                     </view>
+                    <connections>
+                        <outlet property="radioView" destination="ThG-cx-v8k" id="XCX-qG-Upn"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>

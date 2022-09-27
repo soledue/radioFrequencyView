@@ -18,7 +18,7 @@
 
 /* Begin PBXFileReference section */
 		628DF55B3D1DDCCA7716558E /* Pods_RadioFrequencyView.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_RadioFrequencyView.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		6D7773C528E1BFC90039BC29 /* RadioFrequencyView.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RadioFrequencyView.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		6D7773C528E1BFC90039BC29 /* RadioFrequencyView_Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RadioFrequencyView_Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6D7773C828E1BFC90039BC29 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		6D7773CA28E1BFC90039BC29 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		6D7773CC28E1BFC90039BC29 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -72,7 +72,7 @@
 		6D7773C628E1BFC90039BC29 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				6D7773C528E1BFC90039BC29 /* RadioFrequencyView.app */,
+				6D7773C528E1BFC90039BC29 /* RadioFrequencyView_Example.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -94,9 +94,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		6D7773C428E1BFC90039BC29 /* RadioFrequencyView */ = {
+		6D7773C428E1BFC90039BC29 /* RadioFrequencyView_Example */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 6D7773D928E1BFCC0039BC29 /* Build configuration list for PBXNativeTarget "RadioFrequencyView" */;
+			buildConfigurationList = 6D7773D928E1BFCC0039BC29 /* Build configuration list for PBXNativeTarget "RadioFrequencyView_Example" */;
 			buildPhases = (
 				8B63A64C067B7FF42689087E /* [CP] Check Pods Manifest.lock */,
 				6D7773C128E1BFC90039BC29 /* Sources */,
@@ -108,9 +108,9 @@
 			);
 			dependencies = (
 			);
-			name = RadioFrequencyView;
+			name = RadioFrequencyView_Example;
 			productName = RadioFrequencyView;
-			productReference = 6D7773C528E1BFC90039BC29 /* RadioFrequencyView.app */;
+			productReference = 6D7773C528E1BFC90039BC29 /* RadioFrequencyView_Example.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -128,7 +128,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 6D7773C028E1BFC90039BC29 /* Build configuration list for PBXProject "RadioFrequencyView" */;
+			buildConfigurationList = 6D7773C028E1BFC90039BC29 /* Build configuration list for PBXProject "RadioFrequencyView_Example" */;
 			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -141,7 +141,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				6D7773C428E1BFC90039BC29 /* RadioFrequencyView */,
+				6D7773C428E1BFC90039BC29 /* RadioFrequencyView_Example */,
 			);
 		};
 /* End PBXProject section */
@@ -413,7 +413,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		6D7773C028E1BFC90039BC29 /* Build configuration list for PBXProject "RadioFrequencyView" */ = {
+		6D7773C028E1BFC90039BC29 /* Build configuration list for PBXProject "RadioFrequencyView_Example" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				6D7773D728E1BFCC0039BC29 /* Debug */,
@@ -422,7 +422,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		6D7773D928E1BFCC0039BC29 /* Build configuration list for PBXNativeTarget "RadioFrequencyView" */ = {
+		6D7773D928E1BFCC0039BC29 /* Build configuration list for PBXNativeTarget "RadioFrequencyView_Example" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				6D7773DA28E1BFCC0039BC29 /* Debug */,

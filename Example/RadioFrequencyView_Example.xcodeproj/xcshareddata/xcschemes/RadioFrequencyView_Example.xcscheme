@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "6D7773C428E1BFC90039BC29"
-               BuildableName = "RadioFrequencyView.app"
-               BlueprintName = "RadioFrequencyView"
-               ReferencedContainer = "container:RadioFrequencyView.xcodeproj">
+               BuildableName = "RadioFrequencyView_Example.app"
+               BlueprintName = "RadioFrequencyView_Example"
+               ReferencedContainer = "container:RadioFrequencyView_Example.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -45,9 +45,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "6D7773C428E1BFC90039BC29"
-            BuildableName = "RadioFrequencyView.app"
-            BlueprintName = "RadioFrequencyView"
-            ReferencedContainer = "container:RadioFrequencyView.xcodeproj">
+            BuildableName = "RadioFrequencyView_Example.app"
+            BlueprintName = "RadioFrequencyView_Example"
+            ReferencedContainer = "container:RadioFrequencyView_Example.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -62,9 +62,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "6D7773C428E1BFC90039BC29"
-            BuildableName = "RadioFrequencyView.app"
-            BlueprintName = "RadioFrequencyView"
-            ReferencedContainer = "container:RadioFrequencyView.xcodeproj">
+            BuildableName = "RadioFrequencyView_Example.app"
+            BlueprintName = "RadioFrequencyView_Example"
+            ReferencedContainer = "container:RadioFrequencyView_Example.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

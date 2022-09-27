@@ -44,18 +44,16 @@ public class RadioFrequencyView: UIControl {
     public var frequecy: CGFloat = 76 {
         didSet {
             frequecy = max(min(frequecy, endFrequency), startFrequency)
-            var startPostion = (frequecy - startFrequency) / stepFrequency  * distanceFrequency
-            startPostion = startPostion + ((frequecy - startFrequency)  / stepFrequency) * 1
-            scrollView.setContentOffset(CGPoint(x: startPostion - bounds.width/2, y: 0), animated: true)
-            delegate?.frequency(view: self, didChange: frequecy)
+            update()
         }
     }
-    public var stepFrequency: CGFloat = 0.05
+    public var stepFrequency: CGFloat = 0.1
     public var distanceFrequency: CGFloat = 6
     public var intermediateFrequencyColor: UIColor = .gray
     public var mainMargin: CGFloat = 3
     public var intermediateMargin: CGFloat = 10
     public var labelMargin: CGFloat = 4
+    public var labelColor: UIColor = .black
     public var mainFrequencyColor: UIColor = .black
     public var indicatorColor: UIColor = .red
     public var labelFont = UIFont.systemFont(ofSize: 9, weight: .light)
@@ -96,7 +94,11 @@ public class RadioFrequencyView: UIControl {
     lazy var rightButton = UIButton(frame: .null)
     lazy var leftShadow = UIImageView(frame: .null)
     lazy var rightShadow = UIImageView(frame: .null)
+    lazy var fake = FrequencyDrawView(frame: .null)
     
+    private var frequenciesCount: Int {
+        return Int((endFrequency - startFrequency) / stepFrequency * distanceFrequency)
+    }
     private var tempView: UIView?
     
     override init(frame: CGRect) {
@@ -109,12 +111,18 @@ public class RadioFrequencyView: UIControl {
     }
     public override func layoutSubviews() {
         super.layoutSubviews()
-        scrollView.contentInset = UIEdgeInsets(top: 0, left: bounds.width/2, bottom: 0, right: bounds.width/2)
+        scrollView.contentInset = UIEdgeInsets(top: 0, left: bounds.width/2 - fake.firstOffset, bottom: 0, right: bounds.width/2 - fake.firstOffset)
+        update(animated: false)
     }
     public func refresh() {
         buildFrequency()
-        buildOverlay()
         frequecy = startFrequency
+    }
+    func update(animated: Bool = true) {
+        var startPostion = (frequecy - startFrequency) / stepFrequency  * distanceFrequency
+        startPostion = startPostion + ((frequecy - startFrequency) / stepFrequency)
+        scrollView.setContentOffset(CGPoint(x: startPostion - scrollView.contentInset.left, y: 0), animated: animated)
+        delegate?.frequency(view: self, didChange: frequecy)
     }
     public override func prepareForInterfaceBuilder() {
         setup()
@@ -145,12 +153,29 @@ private extension RadioFrequencyView {
         scrollView.showsHorizontalScrollIndicator = false
         scrollView.delegate = self
         
-
+        
+        scrollView.addSubview(fake)
+        fake.translatesAutoresizingMaskIntoConstraints = false
+        fake.leftAnchor.constraint(equalTo: scrollView.leftAnchor).isActive = true
+        let right = fake.rightAnchor.constraint(equalTo: scrollView.rightAnchor)
+        right.priority = .defaultLow
+        
+        right.isActive = true
+        fake.topAnchor.constraint(equalTo: scrollView.topAnchor).isActive = true
+        fake.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor).isActive = true
+        let width = fake.widthAnchor.constraint(equalTo: scrollView.widthAnchor)
+        width.priority = .defaultLow
+        width.isActive = true
+        fake.heightAnchor.constraint(equalTo: scrollView.heightAnchor).isActive = true
+        fake.widthAnchor.constraint(equalToConstant: CGFloat(frequenciesCount) * distanceFrequency).isActive = true
+        fake.closureUpdate = ({
+            self.buildOverlay()
+        })
         buildFrequency()
-        buildOverlay()
+        
     }
     func recalcCurrent(_ scrollView: UIScrollView) -> CGFloat {
-        let position = scrollView.contentOffset.x + bounds.width/2
+        let position = scrollView.contentOffset.x + scrollView.contentInset.left
         let format = labelFormat == .decimal ? "%.1f" : "%.0f"
         let current = String(format: format, position / (distanceFrequency + 1) * stepFrequency + startFrequency)
         
@@ -170,8 +195,8 @@ private extension RadioFrequencyView {
         indicatorView.isUserInteractionEnabled = false
         indicatorView.backgroundColor = indicatorColor
         indicatorView.translatesAutoresizingMaskIntoConstraints = false
-        indicatorView.topAnchor.constraint(equalTo: topAnchor).isActive = true
-        indicatorView.bottomAnchor.constraint(equalTo: tempView!.bottomAnchor, constant: mainMargin).isActive = true
+        indicatorView.topAnchor.constraint(equalTo: topAnchor, constant: 0).isActive = true
+        indicatorView.bottomAnchor.constraint(equalTo: fake.bottomAnchor, constant: -fake.bottomLine).isActive = true
         indicatorView.widthAnchor.constraint(equalToConstant: 2).isActive = true
         indicatorView.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
         
@@ -196,7 +221,7 @@ private extension RadioFrequencyView {
         leftButton.widthAnchor.constraint(equalToConstant: 32).isActive = true
         leftButton.heightAnchor.constraint(equalToConstant: 32).isActive = true
         leftButton.leftAnchor.constraint(equalTo: leftAnchor, constant: 16).isActive = true
-        leftButton.centerYAnchor.constraint(equalTo: tempView!.centerYAnchor).isActive = true
+        leftButton.centerYAnchor.constraint(equalTo: fake.centerYAnchor, constant: -(fake.bottomLine-mainMargin)/2).isActive = true
         leftButton.addTarget(self, action: #selector(leftPressed), for: .touchUpInside)
         rightButton.removeFromSuperview()
         addSubview(rightButton)
@@ -205,77 +230,90 @@ private extension RadioFrequencyView {
         rightButton.widthAnchor.constraint(equalToConstant: 32).isActive = true
         rightButton.heightAnchor.constraint(equalToConstant: 32).isActive = true
         rightButton.rightAnchor.constraint(equalTo: rightAnchor, constant: -16).isActive = true
-        rightButton.centerYAnchor.constraint(equalTo: tempView!.centerYAnchor).isActive = true
+        rightButton.centerYAnchor.constraint(equalTo: fake.centerYAnchor, constant: -(fake.bottomLine-mainMargin)/2).isActive = true
         rightButton.addTarget(self, action: #selector(rightPressed), for: .touchUpInside)
+        setNeedsDisplay()
+        layoutIfNeeded()
+        
     }
     func buildFrequency() {
-        scrollView.subviews.first?.removeFromSuperview()
-        frequenciesView.removeFromSuperview()
-        frequenciesView = UIStackView(frame: .null)
-        let fake = UIView(frame: .null)
-        scrollView.addSubview(fake)
-        fake.translatesAutoresizingMaskIntoConstraints = false
-        fake.leftAnchor.constraint(equalTo: scrollView.leftAnchor).isActive = true
-        let right = fake.rightAnchor.constraint(equalTo: scrollView.rightAnchor)
-        right.priority = .defaultLow
-        
-        right.isActive = true
-        fake.topAnchor.constraint(equalTo: scrollView.topAnchor).isActive = true
-        fake.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor).isActive = true
-        let width = fake.widthAnchor.constraint(equalTo: scrollView.widthAnchor)
-        width.priority = .defaultLow
-        width.isActive = true
-        fake.heightAnchor.constraint(equalTo: scrollView.heightAnchor).isActive = true
-        
-        fake.addSubview(frequenciesView)
-        frequenciesView.translatesAutoresizingMaskIntoConstraints = false
-        frequenciesView.leftAnchor.constraint(equalTo: fake.leftAnchor).isActive = true
-        frequenciesView.rightAnchor.constraint(equalTo: fake.rightAnchor).isActive = true
-        frequenciesView.topAnchor.constraint(equalTo: fake.topAnchor).isActive = true
-        frequenciesView.bottomAnchor.constraint(equalTo: fake.bottomAnchor).isActive = true
-        
-        frequenciesView.axis = .horizontal
-        frequenciesView.distribution = .fill
-        
-        frequenciesView.spacing = distanceFrequency
-        frequenciesView.arrangedSubviews.forEach({ $0.removeFromSuperview() })
-        
-        
-        for element in stride(from: startFrequency, to: endFrequency, by: stepFrequency).enumerated() {
-            let isIntermediate = element.offset % 5 != 0
-            let view = UIView(frame: .null)
-            view.backgroundColor = .clear
-            
-            
-            view.translatesAutoresizingMaskIntoConstraints = false
-            view.widthAnchor.constraint(equalToConstant: 1).isActive = true
-            frequenciesView.addArrangedSubview(view)
-            let label = UILabel(frame: .null)
-            view.addSubview(label)
-            var text = "\(element.element)"
-            if labelFormat == .int {
-                text = "\(Int(element.element))"
-            }
-            label.text = text
-            label.textColor = isIntermediate ? .clear : .black
-            label.font = labelFont
-            label.translatesAutoresizingMaskIntoConstraints = false
-            label.bottomAnchor.constraint(equalTo: frequenciesView.bottomAnchor).isActive = true
-            label.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-            
-            let line = UIView(frame: .null)
-            view.addSubview(line)
-            line.backgroundColor = isIntermediate ? intermediateFrequencyColor : mainFrequencyColor
-            line.translatesAutoresizingMaskIntoConstraints = false
-            line.topAnchor.constraint(equalTo: view.topAnchor, constant: isIntermediate ? intermediateMargin : mainMargin).isActive = true
-            line.bottomAnchor.constraint(equalTo: label.topAnchor, constant: -labelMargin + (isIntermediate ? -intermediateMargin : -mainMargin)).isActive = true
-            line.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
-            line.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
-            if !isIntermediate {
-                tempView = line
-            }
-        }
+        fake.distance = distanceFrequency
+        fake.intermediateMargin = intermediateMargin
+        fake.mainMargin = mainMargin
+        fake.labelMargin = labelMargin
+        fake.startFrequency = startFrequency
+        fake.endFrequency = endFrequency
+        fake.stepFrequency = stepFrequency
+        fake.labelFormat = labelFormat == .decimal ? "%.1f" : "%.0f"
+        fake.intermediateFrequencyColor = intermediateFrequencyColor
+        fake.mainFrequencyColor = mainFrequencyColor
+        fake.labelColor = labelColor
+        fake.setNeedsDisplay()
     }
-
 }
 
+class FrequencyDrawView: UIView {
+    var count: Int {
+        return Int((endFrequency - startFrequency) / stepFrequency)
+    }
+    var distance: CGFloat = 7
+    var intermediateMargin: CGFloat = 10
+    var mainMargin: CGFloat = 3
+    var labelMargin: CGFloat = 4
+    var startFrequency: CGFloat = 76
+    var endFrequency: CGFloat = 108
+    var stepFrequency: CGFloat = 0.05
+    var labelFormat: String = "%.1f"
+    var labelColor: UIColor = .black
+    var intermediateFrequencyColor: UIColor = .gray
+    var mainFrequencyColor: UIColor = .black
+    var bottomLine: CGFloat = 0
+    var firstOffset: CGFloat = 0
+    var closureUpdate: (()->Void)?
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        backgroundColor = .clear
+        clipsToBounds = false
+        layer.masksToBounds = false
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func draw(_ rect: CGRect) {
+        super.draw(rect)
+        if let context = UIGraphicsGetCurrentContext() {
+            for position in 0...count {
+                let current = String(format: labelFormat, startFrequency + CGFloat(position) * stepFrequency)
+                                             
+                let paragraphStyle = NSMutableParagraphStyle()
+                    paragraphStyle.alignment = .center
+
+                let attrs = [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 9), NSAttributedString.Key.paragraphStyle: paragraphStyle, NSAttributedString.Key.foregroundColor: labelColor]
+                var size = current.size(withAttributes: attrs)
+                if position == 0 {
+                    firstOffset = size.width
+                }
+                let isIntermediate = position % 5 != 0
+                if isIntermediate {
+                    context.setStrokeColor(intermediateFrequencyColor.cgColor)
+                } else {
+                    context.setStrokeColor(mainFrequencyColor.cgColor)
+                }
+                context.setLineWidth(1)
+                let movePoint = (distance + 1) * CGFloat(position) + firstOffset
+                let margin = isIntermediate ? intermediateMargin : mainMargin
+                context.move(to: CGPoint(x: movePoint, y: margin))
+                context.addLine(to: CGPoint(x: movePoint, y: bounds.height - margin - size.height/2 - labelMargin))
+                context.strokePath()
+                bottomLine = max(bottomLine, size.height)
+                if !isIntermediate {
+                    size = current.size(withAttributes: attrs)
+                    current.draw(with: CGRect(x: movePoint-size.width/2, y: bounds.height-size.height, width: size.width, height: size.height), options: .usesLineFragmentOrigin, attributes: attrs, context: nil)
+                }
+            }
+            closureUpdate?()
+        }
+    }
+}
