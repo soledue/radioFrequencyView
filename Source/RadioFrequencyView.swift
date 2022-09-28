@@ -116,7 +116,9 @@ public class RadioFrequencyView: UIControl {
     public override func layoutSubviews() {
         super.layoutSubviews()
         scrollView.contentInset = UIEdgeInsets(top: 0, left: bounds.width/2 - fake.firstOffset, bottom: 0, right: bounds.width/2 - fake.firstOffset)
+        notifyDelegate = false
         update(animated: false)
+        notifyDelegate = true
     }
     public func setFrequency(_ value: CGFloat) {
         notifyDelegate = false
