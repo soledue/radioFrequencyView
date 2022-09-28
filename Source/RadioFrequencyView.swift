@@ -41,6 +41,9 @@ public class RadioFrequencyView: UIControl {
     public var labelFormat: LabelFormat = .decimal
     public var startFrequency: CGFloat = 76
     public var endFrequency: CGFloat = 108
+    public var getFrequency: CGFloat {
+        frequency
+    }
     private(set) var frequency: CGFloat = 76 {
         didSet {
             frequency = max(min(frequency, endFrequency), startFrequency)
