@@ -41,9 +41,9 @@ public class RadioFrequencyView: UIControl {
     public var labelFormat: LabelFormat = .decimal
     public var startFrequency: CGFloat = 76
     public var endFrequency: CGFloat = 108
-    public var frequecy: CGFloat = 76 {
+    private(set) var frequency: CGFloat = 76 {
         didSet {
-            frequecy = max(min(frequecy, endFrequency), startFrequency)
+            frequency = max(min(frequency, endFrequency), startFrequency)
             update()
         }
     }
@@ -99,6 +99,7 @@ public class RadioFrequencyView: UIControl {
     private var frequenciesCount: Int {
         return Int((endFrequency - startFrequency) / stepFrequency * distanceFrequency)
     }
+    private var notifyDelegate = true
     private var tempView: UIView?
     
     override init(frame: CGRect) {
@@ -114,15 +115,22 @@ public class RadioFrequencyView: UIControl {
         scrollView.contentInset = UIEdgeInsets(top: 0, left: bounds.width/2 - fake.firstOffset, bottom: 0, right: bounds.width/2 - fake.firstOffset)
         update(animated: false)
     }
+    public func setFrequency(_ value: CGFloat) {
+        notifyDelegate = false
+        frequency = value
+        notifyDelegate = true
+    }
     public func refresh() {
         buildFrequency()
-        frequecy = startFrequency
+        frequency = startFrequency
     }
     func update(animated: Bool = true) {
-        var startPostion = (frequecy - startFrequency) / stepFrequency  * distanceFrequency
-        startPostion = startPostion + ((frequecy - startFrequency) / stepFrequency)
+        var startPostion = (frequency - startFrequency) / stepFrequency  * distanceFrequency
+        startPostion = startPostion + ((frequency - startFrequency) / stepFrequency)
         scrollView.setContentOffset(CGPoint(x: startPostion - scrollView.contentInset.left, y: 0), animated: animated)
-        delegate?.frequency(view: self, didChange: frequecy)
+        if notifyDelegate {
+            delegate?.frequency(view: self, didChange: frequency)
+        }
     }
     public override func prepareForInterfaceBuilder() {
         setup()
@@ -132,12 +140,12 @@ public class RadioFrequencyView: UIControl {
 extension RadioFrequencyView: UIScrollViewDelegate {
     public func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
 
-        frequecy = recalcCurrent(scrollView)
+        frequency = recalcCurrent(scrollView)
     }
     public func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
         guard !decelerate else {return}
         
-        frequecy = recalcCurrent(scrollView)
+        frequency = recalcCurrent(scrollView)
     }
 }
 
@@ -182,11 +190,11 @@ private extension RadioFrequencyView {
         return CGFloat(Float(current) ?? 0)
     }
     @objc func leftPressed() {
-        frequecy = max(startFrequency, frequecy - stepFrequency)
+        frequency = max(startFrequency, frequency - stepFrequency)
 
     }
     @objc func rightPressed() {
-        frequecy = min(endFrequency, frequecy + stepFrequency)
+        frequency = min(endFrequency, frequency + stepFrequency)
     }
     func buildOverlay() {
         indicatorView.removeFromSuperview()

@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'RadioFrequencyView'
-  s.version          = '1.0.4'
+  s.version          = '1.0.5'
   s.summary          = 'The RadioFrequencyView is Simple AM/FM Slider View'
   s.homepage         = 'https://github.com/soledue/radioFrequencyView'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
