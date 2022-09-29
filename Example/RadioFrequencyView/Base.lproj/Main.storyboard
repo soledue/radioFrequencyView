@@ -54,6 +54,7 @@
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <color key="tintColor" red="0.36078431372549019" green="0.4392156862745098" blue="0.53333333333333333" alpha="0.40006725993377484" colorSpace="calibratedRGB"/>
                         <constraints>
                             <constraint firstItem="krt-0q-RUT" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="4lB-BB-mfU"/>
                             <constraint firstItem="krt-0q-RUT" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="ASI-Re-PDA"/>

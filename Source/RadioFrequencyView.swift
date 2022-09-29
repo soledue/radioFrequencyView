@@ -62,6 +62,8 @@ public class RadioFrequencyView: UIControl {
     public var indicatorColor: UIColor = .red
     public var labelFont = UIFont.systemFont(ofSize: 12, weight: .regular)
     public var labelCurrentFont = UIFont.systemFont(ofSize: 14, weight: .bold)
+    public var intermediateLineWidth: CGFloat = 1
+    public var mainLineWidth: CGFloat = 2
     @IBInspectable
     public var leftButtonImage: UIImage? {
         didSet {
@@ -295,6 +297,8 @@ private extension RadioFrequencyView {
         fake.labelColor = labelColor
         fake.labelFont = labelFont
         fake.labelCurrentFont = labelCurrentFont
+        fake.intermediateLineWidth = intermediateLineWidth
+        fake.mainLineWidth = mainLineWidth
         fake.setNeedsDisplay()
         layoutIfNeeded()
     }
@@ -315,15 +319,17 @@ class FrequencyDrawView: UIView {
     var labelColor: UIColor = .black
     var intermediateFrequencyColor: UIColor = .gray
     var mainFrequencyColor: UIColor = .black
-    var bottomLine: CGFloat = 0
+    var bottomLine: CGFloat = CGFloat.greatestFiniteMagnitude
     var firstOffset: CGFloat = 0
     var labelFont = UIFont.systemFont(ofSize: 12, weight: .regular)
     var labelCurrentFont = UIFont.systemFont(ofSize: 14, weight: .bold)
+    var intermediateLineWidth: CGFloat = 1
+    var mainLineWidth: CGFloat = 2
     var currentIndex: Int = 0
     var closureUpdate: (()->Void)?
     override init(frame: CGRect) {
         super.init(frame: frame)
-        backgroundColor = .clear
+        backgroundColor = .lightGray
         clipsToBounds = false
         layer.masksToBounds = false
     }
@@ -352,16 +358,16 @@ class FrequencyDrawView: UIView {
                 } else {
                     context.setStrokeColor(mainFrequencyColor.cgColor)
                 }
-                context.setLineWidth(1)
+                context.setLineWidth(isIntermediate ? intermediateLineWidth : mainLineWidth)
                 let movePoint = (distance + 1) * CGFloat(position) + firstOffset
                 let margin = isIntermediate ? intermediateMargin : mainMargin
                 context.move(to: CGPoint(x: movePoint, y: margin))
                 context.addLine(to: CGPoint(x: movePoint, y: bounds.height - margin - size.height/2 - labelMargin))
                 context.strokePath()
-                bottomLine = max(bottomLine, size.height)
+                bottomLine = min(bottomLine, size.height)
                 if !isIntermediate {
-//                    size = current.size(withAttributes: attrs)
-                    current.draw(with: CGRect(x: movePoint-size.width/2, y: bounds.height-size.height, width: size.width, height: size.height), options: .usesLineFragmentOrigin, attributes: attrs, context: nil)
+                    let rect = CGRect(x: movePoint-size.width/2, y: bounds.height-size.height, width: size.width, height: size.height)
+                    current.draw(with: rect, options: .usesLineFragmentOrigin, attributes: attrs, context: nil)
                 }
             }
             closureUpdate?()
