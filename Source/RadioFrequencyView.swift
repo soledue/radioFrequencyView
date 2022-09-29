@@ -107,6 +107,7 @@ public class RadioFrequencyView: UIControl {
     private var notifyDelegate = true
     private var tempView: UIView?
     private weak var displayLink: CADisplayLink?
+    private var fakeWidth: NSLayoutConstraint?
     override init(frame: CGRect) {
         super.init(frame: frame)
         setup()
@@ -198,7 +199,8 @@ private extension RadioFrequencyView {
         width.priority = .defaultLow
         width.isActive = true
         fake.heightAnchor.constraint(equalTo: scrollView.heightAnchor).isActive = true
-        fake.widthAnchor.constraint(equalToConstant: CGFloat(frequenciesCount) * distanceFrequency).isActive = true
+        fakeWidth = fake.widthAnchor.constraint(equalToConstant: CGFloat(frequenciesCount) * distanceFrequency)
+        fakeWidth?.isActive = true
         fake.closureUpdate = ({
             self.buildOverlay()
         })
@@ -279,6 +281,7 @@ private extension RadioFrequencyView {
         
     }
     func buildFrequency() {
+        fakeWidth?.constant = CGFloat(frequenciesCount) * distanceFrequency
         fake.distance = distanceFrequency
         fake.intermediateMargin = intermediateMargin
         fake.mainMargin = mainMargin
@@ -293,6 +296,7 @@ private extension RadioFrequencyView {
         fake.labelFont = labelFont
         fake.labelCurrentFont = labelCurrentFont
         fake.setNeedsDisplay()
+        layoutIfNeeded()
     }
 }
 
