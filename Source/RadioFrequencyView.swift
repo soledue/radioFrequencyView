@@ -286,7 +286,7 @@ private extension RadioFrequencyView {
         fake.startFrequency = startFrequency
         fake.endFrequency = endFrequency
         fake.stepFrequency = stepFrequency
-        fake.labelFormat = labelFormat == .decimal ? "%.1f" : "%.0f"
+        fake.labelFormat = labelFormat == .decimal ? "%g" : "%.0f"
         fake.intermediateFrequencyColor = intermediateFrequencyColor
         fake.mainFrequencyColor = mainFrequencyColor
         fake.labelColor = labelColor
