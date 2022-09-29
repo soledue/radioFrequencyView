@@ -53,13 +53,15 @@ public class RadioFrequencyView: UIControl {
     public var stepFrequency: CGFloat = 0.1
     public var distanceFrequency: CGFloat = 6
     public var intermediateFrequencyColor: UIColor = .gray
-    public var mainMargin: CGFloat = 3
-    public var intermediateMargin: CGFloat = 10
+    public var mainMargin: CGFloat = 16
+    public var intermediateMargin: CGFloat = 26
     public var labelMargin: CGFloat = 4
     public var labelColor: UIColor = .black
     public var mainFrequencyColor: UIColor = .black
+    public var indicatorMargin: CGFloat = 10
     public var indicatorColor: UIColor = .red
-    public var labelFont = UIFont.systemFont(ofSize: 9, weight: .light)
+    public var labelFont = UIFont.systemFont(ofSize: 12, weight: .regular)
+    public var labelCurrentFont = UIFont.systemFont(ofSize: 14, weight: .bold)
     @IBInspectable
     public var leftButtonImage: UIImage? {
         didSet {
@@ -104,7 +106,7 @@ public class RadioFrequencyView: UIControl {
     }
     private var notifyDelegate = true
     private var tempView: UIView?
-    
+    private weak var displayLink: CADisplayLink?
     override init(frame: CGRect) {
         super.init(frame: frame)
         setup()
@@ -143,6 +145,22 @@ public class RadioFrequencyView: UIControl {
 }
 
 extension RadioFrequencyView: UIScrollViewDelegate {
+    public func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        if !scrollView.isDecelerating, !scrollView.isDragging, !scrollView.isTracking {
+            let position = scrollView.contentOffset.x + scrollView.contentInset.left
+
+            let current = Int(( position / (distanceFrequency + 1) ).rounded())
+            
+            if fake.currentIndex != current, current % 5 == 0 || fake.currentIndex % 5 == 0 {
+                fake.currentIndex = current
+                createDisplayLink()
+            }
+            
+            print(current%5, current)
+            
+        }
+//        print(scrollView.isDecelerating, scrollView.isDragging, scrollView.isTracking)
+    }
     public func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
 
         frequency = recalcCurrent(scrollView)
@@ -187,11 +205,22 @@ private extension RadioFrequencyView {
         buildFrequency()
         
     }
+    func createDisplayLink() {
+        displayLink?.invalidate() // cancel prior one, if any
+        
+        let displayLink = CADisplayLink(target: self, selector: #selector(handleDisplayLink(_:)))
+        displayLink.add(to: .main, forMode: .default)
+        self.displayLink = displayLink
+    }
+
+    @objc func handleDisplayLink(_ displayLink: CADisplayLink) {
+        fake.setNeedsDisplay()
+        displayLink.invalidate()
+    }
     func recalcCurrent(_ scrollView: UIScrollView) -> CGFloat {
         let position = scrollView.contentOffset.x + scrollView.contentInset.left
         let format = labelFormat == .decimal ? "%.1f" : "%.0f"
         let current = String(format: format, position / (distanceFrequency + 1) * stepFrequency + startFrequency)
-        
         return CGFloat(Float(current) ?? 0)
     }
     @objc func leftPressed() {
@@ -208,8 +237,8 @@ private extension RadioFrequencyView {
         indicatorView.isUserInteractionEnabled = false
         indicatorView.backgroundColor = indicatorColor
         indicatorView.translatesAutoresizingMaskIntoConstraints = false
-        indicatorView.topAnchor.constraint(equalTo: topAnchor, constant: 0).isActive = true
-        indicatorView.bottomAnchor.constraint(equalTo: fake.bottomAnchor, constant: -fake.bottomLine).isActive = true
+        indicatorView.topAnchor.constraint(equalTo: topAnchor, constant: indicatorMargin).isActive = true
+        indicatorView.bottomAnchor.constraint(equalTo: fake.bottomAnchor, constant: -fake.bottomLine-indicatorMargin).isActive = true
         indicatorView.widthAnchor.constraint(equalToConstant: 2).isActive = true
         indicatorView.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
         
@@ -261,6 +290,8 @@ private extension RadioFrequencyView {
         fake.intermediateFrequencyColor = intermediateFrequencyColor
         fake.mainFrequencyColor = mainFrequencyColor
         fake.labelColor = labelColor
+        fake.labelFont = labelFont
+        fake.labelCurrentFont = labelCurrentFont
         fake.setNeedsDisplay()
     }
 }
@@ -282,6 +313,9 @@ class FrequencyDrawView: UIView {
     var mainFrequencyColor: UIColor = .black
     var bottomLine: CGFloat = 0
     var firstOffset: CGFloat = 0
+    var labelFont = UIFont.systemFont(ofSize: 12, weight: .regular)
+    var labelCurrentFont = UIFont.systemFont(ofSize: 14, weight: .bold)
+    var currentIndex: Int = 0
     var closureUpdate: (()->Void)?
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -303,8 +337,8 @@ class FrequencyDrawView: UIView {
                 let paragraphStyle = NSMutableParagraphStyle()
                     paragraphStyle.alignment = .center
 
-                let attrs = [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 9), NSAttributedString.Key.paragraphStyle: paragraphStyle, NSAttributedString.Key.foregroundColor: labelColor]
-                var size = current.size(withAttributes: attrs)
+                let attrs = [NSAttributedString.Key.font: position == currentIndex ? labelCurrentFont : labelFont, NSAttributedString.Key.paragraphStyle: paragraphStyle, NSAttributedString.Key.foregroundColor: labelColor]
+                let size = current.size(withAttributes: attrs)
                 if position == 0 {
                     firstOffset = size.width
                 }
@@ -322,7 +356,7 @@ class FrequencyDrawView: UIView {
                 context.strokePath()
                 bottomLine = max(bottomLine, size.height)
                 if !isIntermediate {
-                    size = current.size(withAttributes: attrs)
+//                    size = current.size(withAttributes: attrs)
                     current.draw(with: CGRect(x: movePoint-size.width/2, y: bounds.height-size.height, width: size.width, height: size.height), options: .usesLineFragmentOrigin, attributes: attrs, context: nil)
                 }
             }
