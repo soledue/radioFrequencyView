@@ -53,12 +53,12 @@ public class RadioFrequencyView: UIControl {
     public var stepFrequency: CGFloat = 0.1
     public var distanceFrequency: CGFloat = 6
     public var intermediateFrequencyColor: UIColor = .gray
-    public var mainMargin: CGFloat = 16
-    public var intermediateMargin: CGFloat = 26
-    public var labelMargin: CGFloat = 4
+    public var mainMargin: CGFloat = 8
+    public var intermediateMargin: CGFloat = 18
+    public var labelMargin: CGFloat = 8
     public var labelColor: UIColor = .black
     public var mainFrequencyColor: UIColor = .black
-    public var indicatorMargin: CGFloat = 10
+    public var indicatorMargin: CGFloat = 0
     public var indicatorColor: UIColor = .red
     public var labelFont = UIFont.systemFont(ofSize: 12, weight: .regular)
     public var labelCurrentFont = UIFont.systemFont(ofSize: 14, weight: .bold)
@@ -131,6 +131,7 @@ public class RadioFrequencyView: UIControl {
         notifyDelegate = true
     }
     public func refresh() {
+        buildOverlay()
         buildFrequency()
         frequency = startFrequency
     }
@@ -158,11 +159,7 @@ extension RadioFrequencyView: UIScrollViewDelegate {
                 fake.currentIndex = current
                 createDisplayLink()
             }
-            
-            print(current%5, current)
-            
         }
-//        print(scrollView.isDecelerating, scrollView.isDragging, scrollView.isTracking)
     }
     public func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
 
@@ -242,7 +239,7 @@ private extension RadioFrequencyView {
         indicatorView.backgroundColor = indicatorColor
         indicatorView.translatesAutoresizingMaskIntoConstraints = false
         indicatorView.topAnchor.constraint(equalTo: topAnchor, constant: indicatorMargin).isActive = true
-        indicatorView.bottomAnchor.constraint(equalTo: fake.bottomAnchor, constant: -fake.bottomLine-indicatorMargin).isActive = true
+        indicatorView.bottomAnchor.constraint(equalTo: fake.bottomAnchor, constant: -fake.bottomLine-indicatorMargin-labelMargin).isActive = true
         indicatorView.widthAnchor.constraint(equalToConstant: 2).isActive = true
         indicatorView.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
         
@@ -267,7 +264,7 @@ private extension RadioFrequencyView {
         leftButton.widthAnchor.constraint(equalToConstant: 32).isActive = true
         leftButton.heightAnchor.constraint(equalToConstant: 32).isActive = true
         leftButton.leftAnchor.constraint(equalTo: leftAnchor, constant: 16).isActive = true
-        leftButton.centerYAnchor.constraint(equalTo: fake.centerYAnchor, constant: -(fake.bottomLine-mainMargin)/2).isActive = true
+        leftButton.centerYAnchor.constraint(equalTo: fake.centerYAnchor, constant: -fake.bottomLine+labelMargin/2).isActive = true
         leftButton.addTarget(self, action: #selector(leftPressed), for: .touchUpInside)
         rightButton.removeFromSuperview()
         addSubview(rightButton)
@@ -276,7 +273,7 @@ private extension RadioFrequencyView {
         rightButton.widthAnchor.constraint(equalToConstant: 32).isActive = true
         rightButton.heightAnchor.constraint(equalToConstant: 32).isActive = true
         rightButton.rightAnchor.constraint(equalTo: rightAnchor, constant: -16).isActive = true
-        rightButton.centerYAnchor.constraint(equalTo: fake.centerYAnchor, constant: -(fake.bottomLine-mainMargin)/2).isActive = true
+        rightButton.centerYAnchor.constraint(equalTo: fake.centerYAnchor, constant: -fake.bottomLine+labelMargin/2).isActive = true
         rightButton.addTarget(self, action: #selector(rightPressed), for: .touchUpInside)
         setNeedsDisplay()
         layoutIfNeeded()
@@ -329,7 +326,7 @@ class FrequencyDrawView: UIView {
     var closureUpdate: (()->Void)?
     override init(frame: CGRect) {
         super.init(frame: frame)
-        backgroundColor = .lightGray
+        backgroundColor = .clear
         clipsToBounds = false
         layer.masksToBounds = false
     }
@@ -349,6 +346,7 @@ class FrequencyDrawView: UIView {
 
                 let attrs = [NSAttributedString.Key.font: position == currentIndex ? labelCurrentFont : labelFont, NSAttributedString.Key.paragraphStyle: paragraphStyle, NSAttributedString.Key.foregroundColor: labelColor]
                 let size = current.size(withAttributes: attrs)
+                bottomLine = min(bottomLine, size.height)
                 if position == 0 {
                     firstOffset = size.width
                 }
@@ -362,11 +360,11 @@ class FrequencyDrawView: UIView {
                 let movePoint = (distance + 1) * CGFloat(position) + firstOffset
                 let margin = isIntermediate ? intermediateMargin : mainMargin
                 context.move(to: CGPoint(x: movePoint, y: margin))
-                context.addLine(to: CGPoint(x: movePoint, y: bounds.height - margin - size.height/2 - labelMargin))
+                context.addLine(to: CGPoint(x: movePoint, y: bounds.height - margin - bottomLine - labelMargin))
                 context.strokePath()
-                bottomLine = min(bottomLine, size.height)
+                
                 if !isIntermediate {
-                    let rect = CGRect(x: movePoint-size.width/2, y: bounds.height-size.height, width: size.width, height: size.height)
+                    let rect = CGRect(x: movePoint-size.width/2, y: bounds.height-bottomLine-(size.height-bottomLine)/2, width: size.width, height: size.height)
                     current.draw(with: rect, options: .usesLineFragmentOrigin, attributes: attrs, context: nil)
                 }
             }
