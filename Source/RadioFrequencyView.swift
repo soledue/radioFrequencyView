@@ -29,11 +29,13 @@ public class RadioFrequencyView: UIControl {
                 startFrequency = 76
                 endFrequency = 108
                 stepFrequency = 0.05
+                startIndex = 0
             case .am:
                 labelFormat = .int
                 startFrequency = 153
                 endFrequency = 1710
                 stepFrequency = 1
+                startIndex = 3
             }
             refresh()
         }
@@ -64,6 +66,7 @@ public class RadioFrequencyView: UIControl {
     public var labelCurrentFont = UIFont.systemFont(ofSize: 14, weight: .bold)
     public var intermediateLineWidth: CGFloat = 1
     public var mainLineWidth: CGFloat = 2
+    public var startIndex: Int = 0
     @IBInspectable
     public var leftButtonImage: UIImage? {
         didSet {
@@ -155,7 +158,7 @@ extension RadioFrequencyView: UIScrollViewDelegate {
 
             let current = Int(( position / (distanceFrequency + 1) ).rounded())
             
-            if fake.currentIndex != current, current % 5 == 0 || fake.currentIndex % 5 == 0 {
+            if fake.currentIndex != current, (current + fake.startIndex) % 5 == 0 || fake.currentIndex % 5 == 0 {
                 fake.currentIndex = current
                 createDisplayLink()
             }
@@ -296,6 +299,7 @@ private extension RadioFrequencyView {
         fake.labelCurrentFont = labelCurrentFont
         fake.intermediateLineWidth = intermediateLineWidth
         fake.mainLineWidth = mainLineWidth
+        fake.startIndex = startIndex
         fake.setNeedsDisplay()
         layoutIfNeeded()
     }
@@ -323,6 +327,7 @@ class FrequencyDrawView: UIView {
     var intermediateLineWidth: CGFloat = 1
     var mainLineWidth: CGFloat = 2
     var currentIndex: Int = 0
+    var startIndex: Int = 0
     var closureUpdate: (()->Void)?
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -350,7 +355,7 @@ class FrequencyDrawView: UIView {
                 if position == 0 {
                     firstOffset = size.width
                 }
-                let isIntermediate = position % 5 != 0
+                let isIntermediate = (position + startIndex) % 5 != 0
                 if isIntermediate {
                     context.setStrokeColor(intermediateFrequencyColor.cgColor)
                 } else {
